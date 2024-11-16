@@ -12,7 +12,6 @@ CONNECTION ERROR: Couldn't connect to node http://127.0.0.1:8545.", COMMENT the 
      network_id: "*",       // Any network (default: none)
     },
 ```
-i
 
 ### 2. Set up truffle config and deploy to the local test ganache blockchain
   - Note that we use 2 terminal at the same time
@@ -30,10 +29,10 @@ i
       - **truffle migrate**
       - **truffle console**
       - use javascript to interact with smart contract. Example:
-      - reference the smart contract: **VendingMachine.deployed().then((x) => {contract = x})**
-      - use that contract instance: **contract.getVendingMachineBalance().then((b) => {bal = b})**
-      - call bal: **bal**
-      - make bal a normal string: bal.toString()
+        - reference the smart contract: **VendingMachine.deployed().then((x) => {contract = x})**
+        - use that contract instance: **contract.getVendingMachineBalance().then((b) => {bal = b})**
+        - call bal: **bal**
+        - make bal a normal string: **bal.toString()**
 
 ## Members
 - 6422770774 Nachat Kaewmeesang
