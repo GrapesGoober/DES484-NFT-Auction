@@ -24,8 +24,8 @@ CONNECTION ERROR: Couldn't connect to node http://127.0.0.1:8545.", COMMENT the 
     },
 ```
   - Install ganache CLI: **npm install -g ganache-cli**
-  - _Terminal1:_ Start ganache CLI: **ganache-cli**
-  - _Terminal2_ run
+  ### Terminal1: Start ganache CLI: **ganache-cli**
+  ### Terminal2 run
       - **truffle migrate**
       - **truffle console**
       - use javascript to interact with smart contract. Example:
