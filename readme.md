@@ -14,7 +14,7 @@ CONNECTION ERROR: Couldn't connect to node http://127.0.0.1:8545.", COMMENT the 
 ```
 
 ### 2. Set up truffle config and deploy to the local test ganache blockchain
-  - Note that we use 2 terminal at the same time
+  - Note that we use 2 terminals at the same time
   - Configure truffle: uncomment development part in truffle-config.js
 ```
     development: {
