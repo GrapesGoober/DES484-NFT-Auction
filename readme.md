@@ -2,7 +2,7 @@
 # Read me
 
 ### 1. Run the test
-  - Command: **truffle test**
+  - Command: _**truffle test**_
   - If this error occurs "Something went wrong while attempting to connect to the network at http://127.0.0.1:8545. Check your network configuration.
 CONNECTION ERROR: Couldn't connect to node http://127.0.0.1:8545.", COMMENT the below part in truffle-config.js
 ```
@@ -23,16 +23,16 @@ CONNECTION ERROR: Couldn't connect to node http://127.0.0.1:8545.", COMMENT the 
      network_id: "*",       // Any network (default: none)
     },
 ```
-  - Install ganache CLI: **npm install -g ganache-cli**
-  ### Terminal1: Start ganache CLI: **ganache-cli**
-  ### Terminal2 run
-      - **truffle migrate**
-      - **truffle console**
+  - Install ganache CLI: _**npm install -g ganache-cli**_
+  - ### Terminal1: Start ganache CLI: _**ganache-cli**_
+  - ### Terminal2 run
+      - _**truffle migrate**_
+      - _**truffle console**_
       - use javascript to interact with smart contract. Example:
-        - reference the smart contract: **VendingMachine.deployed().then((x) => {contract = x})**
-        - use that contract instance: **contract.getVendingMachineBalance().then((b) => {bal = b})**
-        - call bal: **bal**
-        - make bal a normal string: **bal.toString()**
+        - reference the smart contract: _**VendingMachine.deployed().then((x) => {contract = x})**_
+        - use that contract instance: _**contract.getVendingMachineBalance().then((b) => {bal = b})**_
+        - call bal: _**bal**_
+        - make bal a normal string: _**bal.toString()**_
 
 ## Members
 - 6422770774 Nachat Kaewmeesang
