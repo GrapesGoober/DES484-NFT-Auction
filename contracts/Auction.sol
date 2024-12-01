@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract Auction {
     address payable public seller;
@@ -18,7 +18,7 @@ contract Auction {
         // assume seller is the owner of nft
         seller = payable(msg.sender);
         // transfer NFT from original owner (seller) to contract
-        nft.transferFrom(seller, address(this), nftId);
+        nft.transferFrom(payable(seller), payable(this), nftId);
         // initialize some variables
         nft = _nft;
         nftId = _nftId;
@@ -37,7 +37,7 @@ contract Auction {
 
         // Refund the previous highest bidder, if exists
         if (highestBidder != address(0)) {
-            highestBidder.transfer(address(this), highestBid);
+            payable(highestBidder).transfer(highestBid);
         }
 
         // Update the current highest bidder
@@ -54,8 +54,8 @@ contract Auction {
         // only the winning bidder can receive rewards
         require(msg.sender == highestBidder, "Only the highest bidder can claim the prize");
         // start the transaction; exchange NFT to bidder and ETH to seller
-        nft.transferFrom(address(this), highestBidder, nftId);
-        address(this).transfer(seller, highestBid);
+        nft.transferFrom(payable(this), highestBidder, nftId);
+        payable(seller).transfer(highestBid);
 
         emit AuctionEnded(msg.sender, highestBid);
     }
