@@ -7,9 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract NFT is ERC721 {
     uint256 public tokenCounter;
 
-    constructor() ERC721("NFTMarketplace", "NFTM") {
-        tokenCounter = 0;
-    }
+    constructor() ERC721("NFTMarketplace", "NFTM") { }
 
     function mintNFT(address recipient) public returns (uint256) {
         uint256 tokenId = tokenCounter;
