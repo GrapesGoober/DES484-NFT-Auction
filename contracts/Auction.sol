@@ -1,25 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// import "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract Auction {
     address payable public seller;
     uint public endTime;
     address public highestBidder;
     uint public highestBid;
-    // uint public nftTokenId;
+    IERC721 public nft;
+    uint public nftId;
 
     event BidPlaced(address indexed bidder, uint amount);
     event AuctionEnded(address indexed winner, uint amount);
 
-    constructor(uint256 _endTime) {
+    constructor(IERC721 _nft, uint _nftId, uint _endTime) {
+        // assume seller is the owner of nft
         seller = payable(msg.sender);
-
-        // nftContract = IERC721(_nftContract);
-        // nftTokenId = _nftTokenId;
+        // transfer NFT from original owner (seller) to contract
+        nft.transferFrom(seller, address(this), nftId);
+        // initialize some variables
+        nft = _nft;
+        nftId = _nftId;
         endTime = _endTime;
     }
+
+    // this contract will take away money upon bid
+    // will either pay this value to seller, or return to bidder
+    receive() external payable {}
 
     function placeBid() external payable {
 
@@ -29,23 +37,25 @@ contract Auction {
 
         // Refund the previous highest bidder, if exists
         if (highestBidder != address(0)) {
-            (bool success,) = highestBidder.call{value: highestBid}("");
-            require(success, "Refund failed");
+            highestBidder.transfer(address(this), highestBid);
         }
 
         // Update the current highest bidder
         highestBidder = msg.sender;
         highestBid = msg.value;
+        
         emit BidPlaced(msg.sender, msg.value);
     }
 
     function EndAuction() external {
-        require(block.timestamp >= endTime, "Auction has not ended yet");
-        require(msg.sender == highestBidder, "Only the highest bidder can claim the prize");
 
-        // nftContract.transferFrom(address(this), msg.sender, nftTokenId);
-        (bool success,) = msg.sender.call{value: highestBid}("");
-        require(success, "Transfer of funds failed");
+        // check that the auction still running
+        require(block.timestamp >= endTime, "Auction has not ended yet");
+        // only the winning bidder can receive rewards
+        require(msg.sender == highestBidder, "Only the highest bidder can claim the prize");
+        // start the transaction; exchange NFT to bidder and ETH to seller
+        nft.transferFrom(address(this), highestBidder, nftId);
+        address(this).transfer(seller, highestBid);
 
         emit AuctionEnded(msg.sender, highestBid);
     }
