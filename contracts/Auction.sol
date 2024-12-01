@@ -1,18 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
+// import "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-contract EnglishAuction {
-    IERC721 public nftContract;
-    uint256 public nftTokenId;
-    uint256 public endTime;
+contract Auction {
+    address payable public seller;
+    uint public endTime;
     address public highestBidder;
-    uint256 public highestBid;
+    uint public highestBid;
+    // uint public nftTokenId;
 
-    constructor(address _nftContract, uint256 _nftTokenId, uint256 _endTime) {
-        nftContract = IERC721(_nftContract);
-        nftTokenId = _nftTokenId;
+    event BidPlaced(address indexed bidder, uint amount);
+    event AuctionEnded(address indexed winner, uint amount);
+
+    constructor(uint256 _endTime) {
+        seller = payable(msg.sender);
+
+        // nftContract = IERC721(_nftContract);
+        // nftTokenId = _nftTokenId;
         endTime = _endTime;
     }
 
@@ -31,14 +36,17 @@ contract EnglishAuction {
         // Update the current highest bidder
         highestBidder = msg.sender;
         highestBid = msg.value;
+        emit BidPlaced(msg.sender, msg.value);
     }
 
-    function claimPrize() external {
+    function EndAuction() external {
         require(block.timestamp >= endTime, "Auction has not ended yet");
         require(msg.sender == highestBidder, "Only the highest bidder can claim the prize");
 
-        nftContract.transferFrom(address(this), msg.sender, nftTokenId);
+        // nftContract.transferFrom(address(this), msg.sender, nftTokenId);
         (bool success,) = msg.sender.call{value: highestBid}("");
         require(success, "Transfer of funds failed");
+
+        emit AuctionEnded(msg.sender, highestBid);
     }
 }
