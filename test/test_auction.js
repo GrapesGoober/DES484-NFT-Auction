@@ -75,7 +75,7 @@ contract("Auction", (accounts) => {
         const lowerBid = web3.utils.toWei("1", "ether");
         try {
             await auction.placeBid({ from: bidder1, value: lowerBid });
-            assert.fail("Expected revert not received");
+            throw null;
         } catch (error) {
             assert(error.message.includes("Bid must be higher than the current highest bid"), "Unexpected error message");
         }
@@ -83,10 +83,11 @@ contract("Auction", (accounts) => {
 
     it("should reject ending the auction before it ends", async () => {
         try {
-            await newAuction.EndAuction({ from: bidder1 });
-            assert.fail("Expected revert not received");
+            await auction.EndAuction({ from: seller });
+            throw null;
         } catch (error) {
-            assert(error.message.includes("Auction has not ended yet"), "Unexpected error message");
+            const m = error.message;
+            assert(m.includes("Auction has not ended yet"), `Unexpected error message:${m}`)
         }
     });
 
