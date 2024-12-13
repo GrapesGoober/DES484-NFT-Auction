@@ -2,77 +2,68 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-contract Auction is IERC721Receiver {
+contract Auction is ERC721Holder {
     address payable public seller;
     uint public endTime;
     address public highestBidder;
-    uint public highestBid = 0;
+    uint public highestBid;
     IERC721 public nft;
     uint public nftId;
+    bool public auctionStarted;
 
+    event AuctionStarted();
     event BidPlaced(address indexed bidder, uint amount);
     event AuctionEnded(address indexed winner, uint amount);
 
-    constructor(IERC721 _nft, uint _nftId, uint _endTime) payable {
-        // initialize some variables
+    constructor(IERC721 _nft, uint _nftId, uint _endTime) {
         nft = _nft;
         nftId = _nftId;
         endTime = _endTime;
-        
-        // assume seller is the owner of nft
         seller = payable(msg.sender);
-        highestBidder = seller;
-        // transfer NFT from original owner (seller) to contract
-        require(nft.ownerOf(nftId) == seller, "Seller does not own NFT");
-        // // for some reason, I can't transfer NFT to contract
-        // // this throws an undecodable revert, so I cant figure out why
-        // // I tried using IERC721Receiver but doesnt work
-        // nft.approve(address(this), nftId);
-        // nft.safeTransferFrom(msg.sender, address(this), nftId);
+        auctionStarted = false;
     }
 
-    // this contract can lock away ETH and NFT to prevent fraud
-    // the contract itself will pay/transfer the right parties
     receive() external payable {}
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes memory
-    ) public virtual override returns (bytes4) {
-        return this.onERC721Received.selector;
+
+    function startAuction() external {
+        require(msg.sender == seller, "Only the seller can start the auction");
+        require(!auctionStarted, "Auction has already started");
+        require(nft.ownerOf(nftId) == seller, "Seller does not own the NFT");
+
+        nft.safeTransferFrom(seller, address(this), nftId);
+        auctionStarted = true;
+
+        emit AuctionStarted();
     }
 
     function placeBid() external payable {
-
-        // check that auction is running and value is high enough
+        require(auctionStarted, "Auction has not started");
         require(block.timestamp < endTime, "Auction has ended");
         require(msg.value > highestBid, "Bid must be higher than the current highest bid");
 
-        // Refund the previous highest bidder, if exists
         if (highestBidder != address(0)) {
             payable(highestBidder).transfer(highestBid);
         }
 
-        // Update the current highest bidder
         highestBidder = msg.sender;
         highestBid = msg.value;
-        
+
         emit BidPlaced(msg.sender, msg.value);
     }
 
     function EndAuction() external {
-
-        // check that the auction still running
+        require(auctionStarted, "Auction has not started");
         require(block.timestamp >= endTime, "Auction has not ended yet");
-        // only the winning bidder can receive rewards
-        require(msg.sender == highestBidder, "Only the highest bidder can claim the prize");
-        // start the transaction; exchange NFT to bidder and ETH to seller
-        nft.transferFrom(payable(this), highestBidder, nftId);
-        seller.transfer(highestBid);
 
-        emit AuctionEnded(msg.sender, highestBid);
+        if (highestBidder != address(0)) {
+            nft.transferFrom(address(this), highestBidder, nftId);
+            seller.transfer(highestBid);
+        } else {
+            nft.transferFrom(address(this), seller, nftId);
+        }
+
+        emit AuctionEnded(highestBidder, highestBid);
     }
 }
