@@ -15,7 +15,7 @@ contract("Auction", (accounts) => {
         await nft.mintNFT(seller);
 
         // Deploy Auction contract with the minted NFT
-        const endTime = Math.floor(Date.now() / 1000) + 10; // 1-minute auction
+        const endTime = Math.floor(Date.now() / 1000) + 10; // 10-second auction
         auction = await Auction.new(nft.address, nftId, endTime, { from: seller });
     });
 
@@ -95,8 +95,20 @@ contract("Auction", (accounts) => {
         const bidAmount = web3.utils.toWei("3", "ether");
         await auction.placeBid({ from: bidder1, value: bidAmount });
 
-        // Wait for auction to end
-        await new Promise(resolve => setTimeout(resolve, 11000)); // Wait 60 seconds
+        // fast forward time to after the auction ends
+        web3.currentProvider.send({
+            jsonrpc: "2.0",
+            method: "evm_increaseTime",
+            params: [11],
+            id: new Date().getTime()
+        }, () => {});
+
+        // mine the current block to generate a new block.timestamp value
+        web3.currentProvider.send({
+            jsonrpc: "2.0",
+            method: "evm_mine",
+            id: new Date().getTime()
+        }, () => {});
 
         const initialSellerBalance = BigInt(await web3.eth.getBalance(seller));
         await auction.EndAuction({ from: bidder1 });
