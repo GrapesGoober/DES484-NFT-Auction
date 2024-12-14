@@ -17,6 +17,7 @@ contract Auction is ERC721Holder {
     event BidPlaced(address indexed bidder, uint amount);
     event AuctionEnded(address indexed winner, uint amount);
 
+    // creates a new auction, the msg.sender becomes 'seller'
     constructor(IERC721 _nft, uint _nftId, uint _endTime) {
         nft = _nft;
         nftId = _nftId;
@@ -25,8 +26,10 @@ contract Auction is ERC721Holder {
         auctionStarted = false;
     }
 
+    // receiver to get paid and lock funds (escrow)
     receive() external payable {}
 
+    // seller starts auction
     function startAuction() external {
         require(msg.sender == seller, "Only the seller can start the auction");
         require(!auctionStarted, "Auction has already started");
@@ -38,6 +41,7 @@ contract Auction is ERC721Holder {
         emit AuctionStarted();
     }
 
+    // bidder can place bids
     function placeBid() external payable {
         require(auctionStarted, "Auction has not started");
         require(block.timestamp < endTime, "Auction has ended");
@@ -53,13 +57,17 @@ contract Auction is ERC721Holder {
         emit BidPlaced(msg.sender, msg.value);
     }
 
+    // after a certain time, auction can be ended.
+    // anyone can end. the logic is the same.
     function EndAuction() external {
         require(auctionStarted, "Auction has not started");
         require(block.timestamp >= endTime, "Auction has not ended yet");
 
+        // if bidder exists, exchange NFT to bidder and ETH to seller
         if (highestBidder != address(0)) {
             nft.transferFrom(address(this), highestBidder, nftId);
             seller.transfer(highestBid);
+        // otherwise return to seller
         } else {
             nft.transferFrom(address(this), seller, nftId);
         }
