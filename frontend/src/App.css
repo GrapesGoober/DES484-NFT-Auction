@@ -36,3 +36,68 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* General styles */
+.App-container {
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.App-content {
+  background-color: white;
+  padding: 20px 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-height: 170px;
+  width: 80%; /* Sets the width to 80% of the parent container */
+  max-width: 800px; 
+  justify-content: center; /* Centers content vertically */
+  align-items: center;
+}
+
+.App-content h1 {
+  margin-bottom: 20px;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  color: white;
+  background-color: #007bff;
+  text-decoration: none;
+  border-radius: 4px; /* Sharp corners */
+  transition: background-color 0.3s ease;
+}
+
+.button-link:hover {
+  background-color: #0056b3;
+}
+.place-bid-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.place-bid-button:hover {
+  background-color: #0056b3;
+}
