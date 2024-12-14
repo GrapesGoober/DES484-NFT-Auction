@@ -1,7 +1,7 @@
-const Auction = artifacts.require("Auction");
+const Auction = artifacts.require("EnglishAuctionNFT");
 const NFT = artifacts.require("NFT");
 
-contract("Auction", (accounts) => {
+contract("EnglishAuctionNFT", (accounts) => {
     let auction;
     let nft;
     const seller = accounts[0];
