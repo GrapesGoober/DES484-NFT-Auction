@@ -41,15 +41,21 @@ contract("Auction", (accounts) => {
 
     it("should allow bidding and update variables correctly", async () => {
         const bidAmount = web3.utils.toWei("1", "ether");
+        const initialBalance = await web3.eth.getBalance(bidder1);
+    
         await auction.placeBid({ from: bidder1, value: bidAmount });
-
+    
+        const finalBalance = await web3.eth.getBalance(bidder1);
+        const balanceDifference = initialBalance - finalBalance;
         const highestBidder = await auction.highestBidder();
         const highestBid = await auction.highestBid();
         const contractBalance = await web3.eth.getBalance(auction.address);
-
+    
         assert.equal(highestBidder, bidder1, "Highest bidder should be bidder1");
         assert.equal(highestBid.toString(), bidAmount, "Highest bid should match bid amount");
         assert.equal(contractBalance, bidAmount, "Contract balance should match highest bid");
+        // this is 'more than' since bidder lose some money as gas fees
+        assert(balanceDifference > bidAmount, "Bidder1's balance should decrease by the bid amount");
     });
 
     it("should refund previous bidder when outbid", async () => {
