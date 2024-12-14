@@ -1,7 +1,7 @@
-const Auction = artifacts.require("SecondPriceSealBidAuctionNFT");
+const Auction = artifacts.require("AuctionSPSB");
 const NFT = artifacts.require("NFT");
 
-contract("SecondPriceSealBidAuctionNFT", (accounts) => {
+contract("AuctionSPSB", (accounts) => {
     let auction;
     let nft;
     const seller = accounts[0];

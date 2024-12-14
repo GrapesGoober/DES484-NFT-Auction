@@ -1,6 +1,6 @@
 // Defines how contracts are deployed.
 
-const Auction = artifacts.require('EnglishAuctionNFT');
+const Auction = artifacts.require('AuctionEnglish');
 const NFT = artifacts.require('NFT');
 
 module.exports = async function (deployer){
