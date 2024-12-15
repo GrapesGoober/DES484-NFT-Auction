@@ -1,0 +1,1 @@
+// JavaScript to interact with smart contracts.
