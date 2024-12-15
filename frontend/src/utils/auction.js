@@ -1,18 +1,42 @@
+import Web3 from 'web3';
+
 const auction = {
     currentAuction: null,
   
-    createAuction: (tokenId, endTime) => {
-      if (!tokenId || !endTime) throw new Error("Token ID and End Time are required.");
-      if (new Date(endTime).getTime() <= Date.now()) throw new Error("End time must be in the future.");
-  
-      auction.currentAuction = {
-        tokenId,
-        endTime: new Date(endTime).getTime(),
-        highestBid: null,
-        bids: [],
-        isClosed: false,
-      };
-      return auction.currentAuction;
+    createAuction: async (nftContractAddress, tokenId, endTime) => {
+      try {
+        // Create a new Web3 instance
+        const web3 = new Web3(window.ethereum); 
+    
+        // Parse the contract JSON 
+        const artifact = require("../../contracts/AuctionEnglish.json");
+        const abi = artifact.abi;
+        const bytecode = artifact.bytecode;
+    
+        // Get the currently selected account
+        const accounts = await web3.eth.getAccounts();
+        const deployer = accounts[0]; 
+    
+        // Create a contract instance
+        const contract = new web3.eth.Contract(abi);
+    
+        // Deploy the contract
+        const deployedContract = await contract.deploy({
+          data: bytecode,
+          arguments: [nftContractAddress, tokenId, endTime]
+        }).send({ from: deployer, gas: 5000000 }); 
+    
+        // Start the auction
+        const auction = new web3.eth.Contract(abi, deployedContract.options.address);
+        await auction.methods["startAuction"]().call();
+
+        // Return the deployed contract address
+        return deployedContract.options.address; 
+    
+      } catch (error) {
+        console.error("Error deploying contract:", error);
+        return null;
+      }
     },
   
     placeBid: (walletAddress, bidAmount) => {

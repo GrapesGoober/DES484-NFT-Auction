@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import auction from "../utils/auction";
 
 const HostView = () => {
-  const [auctionDetails, setAuctionDetails] = useState({ tokenId: "", endTime: "" });
+  const [auctionDetails, setAuctionDetails] = useState({ nftAddress: "", tokenId: "", endTime: "" });
   const [message, setMessage] = useState("");
 
   const handleCreateAuction = () => {
     try {
-      auction.createAuction(auctionDetails.tokenId, auctionDetails.endTime);
+      auction.createAuction(auctionDetails.nftAddress, auctionDetails.tokenId, auctionDetails.endTime);
       setMessage("Auction created successfully!");
     } catch (error) {
       setMessage(error.message);
@@ -17,6 +17,12 @@ const HostView = () => {
   return (
     <div>
       <h2>Host View</h2>
+      <input
+        type="text"
+        placeholder="NFT Address"
+        value={auctionDetails.nftAddress}
+        onChange={(e) => setAuctionDetails({ ...auctionDetails, nftAddress: e.target.value })}
+      />
       <input
         type="text"
         placeholder="NFT Token ID"
